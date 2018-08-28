@@ -29,8 +29,8 @@ static int kbhit(void);
 static int kbesc(void);
 static int kbget(void);
 static int getch(void);
-static int cursorloc=0;
-int i=0;
+//static int cursorloc=0;
+//int i=0;
 void cursorforward(int x){ 
     if(cursorloc>0){
     printf("\033[%dA", (x));
@@ -44,10 +44,10 @@ void cursorbackward(int x) {
     cursorloc++;
 }
 }
-void gotoxy(int x, int y)
+/*void gotoxy(int x, int y)
 {
 printf("\x1b[%d;%dH",(x),(y));
-}
+}*/
 
 
 static int getch(void)

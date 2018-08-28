@@ -12,9 +12,9 @@
 #include<time.h>
 #include<cstring>
 #include<stropts.h>
+#include<vector>
+#include "lib.h"
 using namespace std;
-#define cursorforward(x) printf("\033[%dA", (x))
-#define cursorbackward(x) printf("\033[%dB", (x))
 
 #define KEY_ESCAPE  0x001b
 #define KEY_ENTER   0x000a
@@ -23,20 +23,33 @@ using namespace std;
 #define KEY_LEFT    0x0107
 #define KEY_RIGHT   0x0108
 
-static struct termios term, oterm;
+/*static struct termios term, oterm;
 
 static int getch(void);
 static int kbhit(void);
 static int kbesc(void);
 static int kbget(void);
-static int getch(void);
+static int getch(void);*/
+static int cursorloc=0;
+int i=0;
+/*void cursorforward(int x){ 
+    if(cursorloc>0){
+    printf("\033[%dA", (x));
+    cursorloc--;
+}
+}
 
-
-
+void cursorbackward(int x) {
+    if(cursorloc<i-1){
+    printf("\033[%dB", (x));
+    cursorloc++;
+}
+}
 void gotoxy(int x, int y)
 {
 printf("\x1b[%d;%dH",(x),(y));
 }
+
 
 static int getch(void)
 {
@@ -106,9 +119,9 @@ static int kbget(void)
 
     c = getch();
     return (c == KEY_ESCAPE) ? kbesc() : c;
-}
+}*/
 
-
+vector<char *> list;
 void show(char argv[])
 {
 DIR *mydir;
@@ -118,6 +131,9 @@ struct stat mystat;
 mydir = opendir(argv);
 while((myfile = readdir(mydir)) != NULL)
 {
+    //string str1 = "./";
+    list.push_back(myfile->d_name);
+    i++;
 stat(myfile->d_name,&mystat);
 printf( (S_ISDIR(mystat.st_mode)) ? "d" : "-");
 printf( (mystat.st_mode & S_IRUSR) ? "r" : "-");
@@ -146,14 +162,19 @@ printf("  %s  %s\n", t, myfile->d_name);
 closedir(mydir);
 }
 
+void gotoxy(int x, int y)
+{
+printf("\x1b[%d;%dH",(x),(y));
+}
+
 int main()
 {
 
 printf("\033[?1049h\033[H");
 show(".");
 //This code will be used when moving to status bar fof command mode
-/*struct winsize w;
-gotoxy(w.ws_row, w.ws_col);*/
+struct winsize w;
+//gotoxy(w.ws_row, w.ws_col);*/
 //int x=0,y=0;
 gotoxy(0,0);
 
@@ -162,7 +183,7 @@ gotoxy(0,0);
 
     while (1) {
         c = kbget();
-        if (c == KEY_ENTER || c == KEY_ESCAPE) {
+        if (c == KEY_ESCAPE) {
             break;
         } else
         if (c == KEY_DOWN) {
@@ -170,7 +191,18 @@ gotoxy(0,0);
         } else
         if (c == KEY_UP) {
             cursorforward(1);
-        } else {
+        } else
+        if (c == KEY_ENTER){
+            printf("\033[?1049h\033[H");
+            show(list[cursorloc]);
+            //gotoxy(0,0);
+            int num;
+            scanf("%d",&num);
+            /*struct winsize w;
+            gotoxy(w.ws_row, w.ws_col);
+            printf("%d", cursorloc);*/
+        }
+         else {
             putchar(c);
         }
     }
