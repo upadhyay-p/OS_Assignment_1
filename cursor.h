@@ -21,6 +21,7 @@ using namespace std;
 #define KEY_DOWN    0x0106
 #define KEY_LEFT    0x0107
 #define KEY_RIGHT   0x0108
+#define COLON       0x003a
 
 static struct termios term, oterm;
 
@@ -29,8 +30,15 @@ static int kbhit(void);
 static int kbesc(void);
 static int kbget(void);
 static int getch(void);
-//static int cursorloc=0;
-//int i=0;
+extern int cursorloc=0;
+int i;
+extern vector<string> list;
+//extern vector<struct fnode*> list;
+
+void commandMode(){
+    
+}
+
 void cursorforward(int x){ 
     if(cursorloc>0){
     printf("\033[%dA", (x));
@@ -117,5 +125,47 @@ static int kbget(void)
     int c;
 
     c = getch();
-    return (c == KEY_ESCAPE) ? kbesc() : c;
+    if(c==KEY_ESCAPE) kbesc();
+    else if(c==COLON) {
+        kbhit();
+        struct winsize w;
+        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+        printf("\033[%d;%dH Command Mode:", w.ws_row,w.ws_col);
+        commandMode();
+
+    }
+    //return (c == KEY_ESCAPE) ? kbesc() : c;
 }
+
+
+/*void action()
+{
+    int c;
+
+    while (1) {
+        c = kbget();
+        if (c == KEY_ESCAPE) {
+            break;
+        } else
+        if (c == KEY_DOWN) {
+            cursorbackward(1);
+        } else
+        if (c == KEY_UP) {
+            cursorforward(1);
+        } else
+        if (c == KEY_ENTER){
+            printf("\033[?1049h\033[H");
+            show(list[cursorloc]);
+
+            /*pid_t pid = fork();
+            if (pid == 0) {
+                execl("/usr/bin/xdg-open", "xdg-open", list[cursorloc], (char *)0);
+                exit(1);
+            }
+            show(".");
+        }
+         else {
+            putchar(c);
+        }
+}
+*/

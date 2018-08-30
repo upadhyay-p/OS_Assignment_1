@@ -13,10 +13,9 @@
 #include<cstring>
 #include<stropts.h>
 #include<vector>
+#include "cursor.h"
 #include "ls.h"
-//#include "start.h"
 using namespace std;
-string path;
 
 #define KEY_ESCAPE  0x001b
 #define KEY_ENTER   0x000a
@@ -30,24 +29,15 @@ void gotoxy(int x, int y)
 printf("\x1b[%d;%dH",(x),(y));
 }
 
-int main()
+void open(char argv[])
 {
-printf("\033[?1049h\033[H");
-
-//getting current working directory in absp
-char absp[1000];
-string d = getcwd(absp,1000);
-string slash="/";
-//showing list of files/directories in cwd
-show(d.append("/"));
-//show("/home/priya/OS_Assignment_1/OS_Assignment_1/demoFolder");
+	show(argv);
 struct winsize w;
-
-//setting cursor to top of the list
-gotoxy(0,0);
+gotoxy(4,0);
 
     int c;
-
+    i=0;
+    cursorloc=0;
     while (1) {
         c = kbget();
         if (c == KEY_ESCAPE) {
@@ -60,21 +50,13 @@ gotoxy(0,0);
             cursorforward(1);
         } else
         if (c == KEY_ENTER){
-            //entering a new directory
             printf("\033[?1049h\033[H");
-            //showing list of files for new directory
-            //string cd = getcwd(absp,1000);
-            //string cd = list[0];
-            //cd.append(list[cursorloc+1]);
-            //cout<<g<<" ";
-            //cout<<cd<<" ";
-            show(list[0]+list[cursorloc+1]);
-            //cout<<list[cursorloc]<<"\n";  
+            open(list[cursorloc]);
 
-            //gotoxy(0,0);
-            //cursorloc =0;
+            gotoxy(0,0);
+            int num;
+            scanf("%d",&num);
 
-            //will deal with this later
             /*pid_t pid = fork();
             if (pid == 0) {
                 execl("/usr/bin/xdg-open", "xdg-open", list[cursorloc], (char *)0);
@@ -82,11 +64,6 @@ gotoxy(0,0);
             }
             show(".");
             */
-        } else
-        if (c == KEY_LEFT) {
-             printf("\033[?1049h\033[H");
-             show(list[0]+"..");
-             gotoxy(0,0);
         }
          else {
             putchar(c);
@@ -94,6 +71,4 @@ gotoxy(0,0);
     }
     printf("\n");
 
-printf("\033[?1049l");
-return 0;
 }
