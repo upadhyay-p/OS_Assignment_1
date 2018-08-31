@@ -1,53 +1,80 @@
-#include<sys/types.h>
-#include<sys/stat.h>
-#include<unistd.h>
-#include<stdio.h>
-#include<stdlib.h>
-#include<dirent.h>
-#include<termios.h>
-#include<sys/ioctl.h>
-#include<pwd.h>
-#include<grp.h>
-#include<iostream>
-#include<time.h>
-#include<cstring>
-#include<stropts.h>
-#include<vector>
-using namespace std;
+#include <stdio.h>
+#include <stdlib.h>
+#include <termios.h>
+#include <unistd.h>
+#include <iostream>
+static struct termios initial_settings, new_settings;
+static int peek_character = -1;
+int kbhit_1();
+int kbhit_2();
+int kbhit_3();
 
-vector<struct fnode*> files;
-int i=0;
 
-struct fnode{
-	string name;
-	long int size;
-};
-
-struct fnode* create_node(string name, long int s){
-	struct fnode* c = (struct fnode *)malloc(sizeof(struct fnode));
-	c->name=name;
-	c->size = s;
-	return c;
+int kbhit_1()
+{
+int ch=0;
+tcgetattr(0,&initial_settings);
+new_settings = initial_settings;
+new_settings.c_lflag &= ~ICANON;
+new_settings.c_lflag &= ~ECHO;
+new_settings.c_lflag &= ~ISIG;
+new_settings.c_cc[VMIN] = 1;
+new_settings.c_cc[VTIME] = 0;
+tcsetattr(0, TCSANOW, &new_settings);
+ch = getchar();
+tcsetattr(0,TCSANOW, &initial_settings);
+if(ch='\033')
+return kbhit_2();
 }
 
-/*struct fnode cn(string name, long int s){
-	struct node c1;
-	struct fnode* c = (struct fnode *)malloc(sizeof(struct fnode));
-	c=c1
-	c1.name =name;
-	c1.size = s;
-	return c1;
+int kbhit_2(){
+
+int ch=0;
+tcgetattr(0,&initial_settings);
+new_settings = initial_settings;
+new_settings.c_lflag &= ~ICANON;
+new_settings.c_lflag &= ~ECHO;
+new_settings.c_lflag &= ~ISIG;
+new_settings.c_cc[VMIN] = 1;
+new_settings.c_cc[VTIME] = 0;
+tcsetattr(0, TCSANOW, &new_settings);
+ch = getchar();
+tcsetattr(0,TCSANOW, &initial_settings);
+if(ch == '[')
+return kbhit_3();	
 }
-*/
-int main(){
 
-	files.push_back(create_node("twoo",19));
-	files.push_back(create_node("one",20));
-	files.push_back(create_node("three",43));
+int kbhit_3(){
+int ch=0;
+tcgetattr(0,&initial_settings);
+new_settings = initial_settings;
+new_settings.c_lflag &= ~ICANON;
+new_settings.c_lflag &= ~ECHO;
+new_settings.c_lflag &= ~ISIG;
+new_settings.c_cc[VMIN] = 1;
+new_settings.c_cc[VTIME] = 0;
+tcsetattr(0, TCSANOW, &new_settings);
+ch = getchar();
+tcsetattr(0,TCSANOW, &initial_settings);
+if(ch=='A')
+printf("you pressed up\n");
+else if(ch=='B')
+printf("you pressed down\n");	
+else  printf("bye\n");
+return ch;
+}
+void close_keyboard()
+{
+tcsetattr(0, TCSANOW, &initial_settings);
+}
 
 
-	for(int i=0;i<3;i++){
-		cout<<files[i]->name<<","<<files[i]->size<<"\n";
-	}
-	return 0;
+int main()
+{
+int ch = 0;
+while(ch!=-1){
+ch = kbhit_1();
+}
+close_keyboard();
+exit(0);
 }

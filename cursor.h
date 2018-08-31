@@ -22,6 +22,9 @@ using namespace std;
 #define KEY_LEFT    0x0107
 #define KEY_RIGHT   0x0108
 #define COLON       0x003a
+#define H_KEY       0x0048
+#define h_KEY       0x0068
+#define BACKSPACE   0x7f
 
 static struct termios term, oterm;
 
@@ -33,20 +36,23 @@ static int getch(void);
 extern int cursorloc=0;
 int i;
 extern vector<string> list;
+extern stack<string> fwdkey;
+extern string home;
+extern int normal_mode;
 //extern vector<struct fnode*> list;
 
 void commandMode(){
-    
+    normal_mode=0;
 }
 
-void cursorforward(int x){ 
+void cursorup(int x){ 
     if(cursorloc>0){
     printf("\033[%dA", (x));
     cursorloc--;
 }
 }
 
-void cursorbackward(int x) {
+void cursordown(int x) {
     if(cursorloc<i-1){
     printf("\033[%dB", (x));
     cursorloc++;
@@ -64,7 +70,7 @@ static int getch(void)
 
     tcgetattr(0, &oterm);
     memcpy(&term, &oterm, sizeof(term));
-    term.c_lflag &= ~(ICANON | ECHO);
+    term.c_lflag &= ~(ICANON /*| ECHO*/);
     term.c_cc[VMIN] = 1;
     term.c_cc[VTIME] = 0;
     tcsetattr(0, TCSANOW, &term);
@@ -79,7 +85,7 @@ static int kbhit(void)
 
     tcgetattr(0, &oterm);
     memcpy(&term, &oterm, sizeof(term));
-    term.c_lflag &= ~(ICANON | ECHO);
+    term.c_lflag &= ~(ICANON /*| ECHO*/);
     term.c_cc[VMIN] = 0;
     term.c_cc[VTIME] = 1;
     tcsetattr(0, TCSANOW, &term);
@@ -103,17 +109,21 @@ static int kbesc(void)
             case 'B':
                 c = KEY_DOWN;
                 break;
-            case 'C':
+            case 'D':
                 c = KEY_LEFT;
                 break;
-            case 'D':
+            case 'C':
                 c = KEY_RIGHT;
                 break;
             default:
                 c = 0;
                 break;
         }
-    } else {
+    } else
+    if(c == '?'){
+        c = BACKSPACE;
+    }
+     else {
         c = 0;
     }
     if (c == 0) while (kbhit()) getch();
@@ -134,38 +144,8 @@ static int kbget(void)
         commandMode();
 
     }
+    else if(c==H_KEY ||c==h_KEY){
+        return c;
+    }
     //return (c == KEY_ESCAPE) ? kbesc() : c;
 }
-
-
-/*void action()
-{
-    int c;
-
-    while (1) {
-        c = kbget();
-        if (c == KEY_ESCAPE) {
-            break;
-        } else
-        if (c == KEY_DOWN) {
-            cursorbackward(1);
-        } else
-        if (c == KEY_UP) {
-            cursorforward(1);
-        } else
-        if (c == KEY_ENTER){
-            printf("\033[?1049h\033[H");
-            show(list[cursorloc]);
-
-            /*pid_t pid = fork();
-            if (pid == 0) {
-                execl("/usr/bin/xdg-open", "xdg-open", list[cursorloc], (char *)0);
-                exit(1);
-            }
-            show(".");
-        }
-         else {
-            putchar(c);
-        }
-}
-*/

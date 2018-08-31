@@ -13,13 +13,16 @@
 #include<cstring>
 #include<stropts.h>
 #include<vector>
+#include<stack>
 #include "cursor.h"
 using namespace std;
 
 extern int i;
 extern string path;
 
+void show (string);
 vector<string> list;
+stack<string> fwdkey;
 
 /*struct fnode{
 	string name;
@@ -40,18 +43,20 @@ void create_fnode(string n, string p){
 }
 */
 
-void openFile(string path_name){
+void openFile(char* path_name){
 	pid_t pid = fork();
             if (pid == 0) {
                 execl("/usr/bin/xdg-open", "xdg-open",path_name, (char *)0);
-                exit(1);
             }
+            show(list[0]);
 }
 
 int isDir(char * name){
 	DIR* directory = opendir(name);
     if(directory != NULL)
     {
+    	string s(name);
+    	fwdkey.push(s);
      closedir(directory);
      return 1;
     }
@@ -107,7 +112,9 @@ while((myfile = readdir(mydir)) != NULL)
     //strcat(cpath,myfile->d_name)
     //list.push_back(myfile->d_name);
     //i++;
+
 stat(myfile->d_name,&mystat);
+//printf(" %s", myfile->d_name );
 printf( (S_ISDIR(mystat.st_mode)) ? "d" : "-");
 printf( (mystat.st_mode & S_IRUSR) ? "r" : "-");
 printf( (mystat.st_mode & S_IWUSR) ? "w" : "-");
@@ -128,7 +135,7 @@ printf("  %.*li  ",10,mystat.st_size);
 struct tm* time = gmtime(&(mystat.st_mtime));
 char *t = ctime(&mystat.st_mtime);
 if(t[strlen(t)-1]=='\n') t[strlen(t)-1]='\0';
-printf("  %s  %s\n", t, myfile->d_name);
+printf("  %s %s \n", t, myfile->d_name);
 
 }
 /*for(int j=0;j<i;i++){
@@ -140,7 +147,7 @@ printf("\033[0;0H");
 }
 
 else {
-//openFile(path_name);
-	cout<<path_name;
+openFile(cpath);
+//	cout<<path_name;
 }
 }
