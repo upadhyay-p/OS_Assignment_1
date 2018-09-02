@@ -14,11 +14,17 @@
 #include<stropts.h>
 #include<vector>
 #include "ls.h"
+#include "commandmode.h"
 //#include "start.h"
 using namespace std;
 string path;
 string home;
 int normal_mode=1;
+//int backspace_off=0;
+int clear_fwd = 0;
+vector<string> list;
+stack<string> fwdkey;
+stack<string> backkey;
 
 #define KEY_ESCAPE  0x001b
 #define KEY_ENTER   0x000a
@@ -28,6 +34,7 @@ int normal_mode=1;
 #define H_KEY       0x0048
 #define h_KEY       0x0068
 #define KEY_RIGHT   0x0108
+#define COLON       0x003a
 
 void gotoxy(int x, int y)
 {
@@ -72,33 +79,57 @@ gotoxy(0,0);
         } else
         if (c == KEY_ENTER){
             //entering a new directory
+            clear_fwd = 1;
             printf("\033[?1049h\033[H");
             show(list[0]+list[cursorloc+1]);
             
         } else
-        if (c == BACKSPACE) {
+        if (c == BACKSPACE && normal_mode) {
+            clear_fwd=0;
              printf("\033[?1049h\033[H");
              show(list[0]+"/..");
              gotoxy(0,0);
+        }  else
+        if (c == KEY_LEFT && normal_mode) {
+             if(!backkey.empty())
+             {
+                 clear_fwd=0;
+                 printf("\033[?1049h\033[H");
+                 fwdkey.push(backkey.top());
+                 backkey.pop();
+                 if(!backkey.empty()){
+                 string s = backkey.top();
+                 backkey.pop();
+                 show(s);
+                 gotoxy(0,0);}
+            }
         } else
-        if (c == KEY_RIGHT) {
+        if (c == KEY_RIGHT && normal_mode) {
              if(!fwdkey.empty())
              {
+                 clear_fwd=0;
                  printf("\033[?1049h\033[H");
-                 string s = fwdkey.top();
+                 backkey.push(fwdkey.top());
+                 fwdkey.pop();
+                 if(!fwdkey.empty())
+                 {string s = fwdkey.top();
                  fwdkey.pop();
                  show(s);
-                 gotoxy(0,0);
+                 gotoxy(0,0);}
             }
         } else 
         if(c==H_KEY ||c==h_KEY){
             kbhit();
             printf("\033[?1049h\033[H");
             show(home);
-        }
-         else {
+        } else 
+        if(c== COLON){
+            normal_mode=0;
+            commands();
+            gotoxy(0,0);
+        }/* else {
             putchar(c);
-        }
+        }*/
     }
     printf("\n");
 

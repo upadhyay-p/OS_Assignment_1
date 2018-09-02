@@ -24,7 +24,7 @@ tcsetattr(0, TCSANOW, &new_settings);
 ch = getchar();
 tcsetattr(0,TCSANOW, &initial_settings);
 if(ch='\033')
-return kbhit_2();
+return kbhit_3();
 }
 
 int kbhit_2(){
@@ -40,11 +40,15 @@ new_settings.c_cc[VTIME] = 0;
 tcsetattr(0, TCSANOW, &new_settings);
 ch = getchar();
 tcsetattr(0,TCSANOW, &initial_settings);
-if(ch == '[')
+if (c != -1) ungetc(c, stdin);
+    return ((c != -1) ? 1 : 0);
+/*if(ch == '[')
 return kbhit_3();	
-}
+*/}
 
 int kbhit_3(){
+	int c=kbhit_2()
+	if(c!)
 int ch=0;
 tcgetattr(0,&initial_settings);
 new_settings = initial_settings;
@@ -56,6 +60,7 @@ new_settings.c_cc[VTIME] = 0;
 tcsetattr(0, TCSANOW, &new_settings);
 ch = getchar();
 tcsetattr(0,TCSANOW, &initial_settings);
+
 if(ch=='A')
 printf("you pressed up\n");
 else if(ch=='B')

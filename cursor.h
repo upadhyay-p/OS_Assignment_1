@@ -39,11 +39,13 @@ extern vector<string> list;
 extern stack<string> fwdkey;
 extern string home;
 extern int normal_mode;
+extern int clear_fwd;
 //extern vector<struct fnode*> list;
 
-void commandMode(){
+/*void commandMode(){
     normal_mode=0;
-}
+    commands();
+}*/
 
 void cursorup(int x){ 
     if(cursorloc>0){
@@ -70,7 +72,7 @@ static int getch(void)
 
     tcgetattr(0, &oterm);
     memcpy(&term, &oterm, sizeof(term));
-    term.c_lflag &= ~(ICANON /*| ECHO*/);
+    term.c_lflag &= ~(ICANON | ECHO);
     term.c_cc[VMIN] = 1;
     term.c_cc[VTIME] = 0;
     tcsetattr(0, TCSANOW, &term);
@@ -85,7 +87,7 @@ static int kbhit(void)
 
     tcgetattr(0, &oterm);
     memcpy(&term, &oterm, sizeof(term));
-    term.c_lflag &= ~(ICANON /*| ECHO*/);
+    term.c_lflag &= ~(ICANON | ECHO);
     term.c_cc[VMIN] = 0;
     term.c_cc[VTIME] = 1;
     tcsetattr(0, TCSANOW, &term);
@@ -137,12 +139,7 @@ static int kbget(void)
     c = getch();
     if(c==KEY_ESCAPE) kbesc();
     else if(c==COLON) {
-        kbhit();
-        struct winsize w;
-        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-        printf("\033[%d;%dH Command Mode:", w.ws_row,w.ws_col);
-        commandMode();
-
+        return c;
     }
     else if(c==H_KEY ||c==h_KEY){
         return c;
