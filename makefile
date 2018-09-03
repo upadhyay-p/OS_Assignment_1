@@ -1,3 +1,5 @@
+#Priya Upadhyay
+#2018202012
 CC = g++
 CFLAGS = -Wall -std=c++1z
 DEPS = cursor.h delete.h commandmode.h ls.h mk_dir.h mk_file.h rename.h runcommands.h

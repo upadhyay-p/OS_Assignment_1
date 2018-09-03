@@ -1,3 +1,5 @@
+//Priya Upadhyay
+//2018202012
 #ifndef COMMANDMODE_H
 #define COMMANDMODE_H
 #include <stdio.h>
@@ -24,16 +26,14 @@ void commands(string home, string currdir){
      	} else
      	if(c == KEY_ENTER) {
      		input[index] = '\0';
-               //cout<<input;
-               //delete_dir("~/del", home, currdir);
      		tokenize(input,home,currdir);
 
-     	}/* else
-     	if(c == BACKSPACE){				//implement backspace later
-     		printf("\b");
+     	} else
+     	if(c == BACKSPACE){				
+     		printf("\b \b");
      		index--;
 
-     	} */else {
+     	} else {
      		input[index] = c;
      		index++;
      	}

@@ -1,3 +1,5 @@
+//Priya Upadhyay
+//2018202012
 #include<sys/types.h>
 #include<sys/stat.h>
 #include<unistd.h>
@@ -103,7 +105,7 @@ void delete_dir(string dir, string home, string currdir){
           }
       }
       rmdir(dname);
-      printf("\ndeleted %s\n",dname);
+     // printf("\ndeleted %s\n",dname);
     }
 
 }
