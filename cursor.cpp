@@ -1,5 +1,3 @@
-#ifndef CURSOR_H
-#define CURSOR_H
 #include<sys/types.h>
 #include<sys/stat.h>
 #include<unistd.h>
@@ -35,30 +33,37 @@ static int kbhit(void);
 static int kbesc(void);
 static int kbget(void);
 static int getch(void);
-int cursorloc=0;
-
-//int i; iski jagah fileno likha h
-int filecount;
+extern int cursorloc=0;
+int i;
 extern vector<string> list;
+extern stack<string> fwdkey;
 extern string home;
 extern int normal_mode;
 extern int clear_fwd;
-extern int rowcount;
-extern int start;
+//extern vector<struct fnode*> list;
+
+/*void commandMode(){
+    normal_mode=0;
+    commands();
+}*/
 
 void cursorup(int x){ 
     if(cursorloc>0){
-    printf("\033[%dA", x);
+    printf("\033[%dA", (x));
     cursorloc--;
 }
 }
 
 void cursordown(int x) {
-    if(cursorloc<filecount-1){
-    printf("\033[%dB", x);
+    if(cursorloc<i-1){
+    printf("\033[%dB", (x));
     cursorloc++;
 }
 }
+/*void gotoxy(int x, int y)
+{
+printf("\x1b[%d;%dH",(x),(y));
+}*/
 
 
 static int getch(void)
@@ -130,6 +135,7 @@ static int kbesc(void)
 static int kbget(void)
 {
     int c;
+
     c = getch();
     if(c==KEY_ESCAPE) kbesc();
     else if(c==COLON) {
@@ -138,6 +144,5 @@ static int kbget(void)
     else if(c==H_KEY ||c==h_KEY){
         return c;
     }
+    //return (c == KEY_ESCAPE) ? kbesc() : c;
 }
-
-#endif

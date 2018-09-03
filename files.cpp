@@ -20,8 +20,10 @@ using namespace std;
 string path;
 string home;
 int normal_mode=1;
+int push=1;
 //int backspace_off=0;
 int clear_fwd = 0;
+extern int cursorloc;
 vector<string> list;
 stack<string> fwdkey;
 stack<string> backkey;
@@ -43,6 +45,7 @@ printf("\x1b[%d;%dH",(x),(y));
 
 int main()
 {
+    getchar();
 printf("\033[?1049h\033[H");
 
 //getting current working directory in absp
@@ -51,7 +54,7 @@ home = getcwd(absp,1000);
 //showing list of files/directories in cwd
 show(home);
 //show("/home/priya/OS_Assignment_1/OS_Assignment_1/demoFolder");
-struct winsize w;
+//struct winsize w;
 
 //setting cursor to top of the list
 gotoxy(0,0);
@@ -81,14 +84,23 @@ gotoxy(0,0);
             //entering a new directory
             clear_fwd = 1;
             printf("\033[?1049h\033[H");
-            show(list[0]+list[cursorloc+1]);
+           // if(list[0].compare(home)!=0 && list[cursorloc+1].compare("..")!=0){
+            if((list[0]+"/"+list[cursorloc+1]).compare(home+"/..")!=0)
+            show(list[0]+"/"+list[cursorloc+1]);
+        else {show(home);}
+        //}
             
         } else
         if (c == BACKSPACE && normal_mode) {
             clear_fwd=0;
              printf("\033[?1049h\033[H");
-             show(list[0]+"/..");
-             gotoxy(0,0);
+             size_t slash = list[0].find_last_of("/");
+             string back = list[0].substr(0,slash);
+             string homeback = home.substr(0,home.find_last_of("/"));
+             //show(list[0]+"/..");
+             if(back.compare(homeback)!=0)
+             {show(back); gotoxy(0,0);}
+             else {show(home);}
         }  else
         if (c == KEY_LEFT && normal_mode) {
              if(!backkey.empty())
@@ -99,6 +111,7 @@ gotoxy(0,0);
                  backkey.pop();
                  if(!backkey.empty()){
                  string s = backkey.top();
+                 fwdkey.push(s); //experiment
                  backkey.pop();
                  show(s);
                  gotoxy(0,0);}
@@ -113,6 +126,7 @@ gotoxy(0,0);
                  fwdkey.pop();
                  if(!fwdkey.empty())
                  {string s = fwdkey.top();
+                    backkey.push(s); //experiment
                  fwdkey.pop();
                  show(s);
                  gotoxy(0,0);}
@@ -125,14 +139,14 @@ gotoxy(0,0);
         } else 
         if(c== COLON){
             normal_mode=0;
-            commands();
+            commands(home,list[0]);
             gotoxy(0,0);
-        }/* else {
-            putchar(c);
-        }*/
+        } else {
+            continue;
+        }
     }
     printf("\n");
 
-printf("\033[?1049l");
+//printf("\033[?1049l");
 return 0;
 }

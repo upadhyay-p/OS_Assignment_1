@@ -1,3 +1,5 @@
+#ifndef RUNCOMMANDS_H
+#define RUNCOMMANDS_H
 #include <stdio.h>
 #include <iostream>
 #include <cstring>
@@ -5,6 +7,7 @@
 #include "mk_file.h"
 #include "rename.h"
 #include "delete.h"
+//#include "cursor.h"
 
 
 vector<string> split(const string& str, const string& delim)
@@ -27,20 +30,10 @@ vector<string> split(const string& str, const string& delim)
 void tokenize(char * input, string home, string currdir){
 
 	vector <string> toks = split(input," ");
- 	//string s(input);
-	//string delimiter = " ";
-
-	/*size_t pos = 0;
-	string token;
-	while ((pos = s.find(delimiter)) != std::string::npos) {
-    	token = s.substr(0, pos);
-    	std::cout << token << std::endl;
-    	toks.push_back(token);
-    	s.erase(0, pos + delimiter.length());
-	}*/
-	string dest = toks.back();
+ 	string dest = toks.back();
 	toks.pop_back();
 	string cmd = toks[0];
+    delete_dir(toks[1], home, currdir);
 
     if(cmd.compare("create_dir")==0){
     		create_dir(dest,toks[1], home, currdir);
@@ -57,5 +50,11 @@ void tokenize(char * input, string home, string currdir){
     if(cmd.compare("delete_file")==0){
     		delete_file(toks[1], home, currdir);
     }
+    if(cmd.compare("delete_dir")==0){
+        //cout<<toks[1];
+            delete_dir(toks[1], home, currdir);
+    }
 	
 }
+
+#endif

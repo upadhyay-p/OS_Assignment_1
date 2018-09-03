@@ -1,10 +1,8 @@
-#ifndef COMMANDMODE_H
-#define COMMANDMODE_H
 #include <stdio.h>
 #include <iostream>
 #include <cstring>
 #include "runcommands.h"
-#include "cursor.h"
+//#include "cursor.h"
 
 
 
@@ -24,27 +22,19 @@ void commands(string home, string currdir){
      	} else
      	if(c == KEY_ENTER) {
      		input[index] = '\0';
-               //cout<<input;
-               //delete_dir("~/del", home, currdir);
      		tokenize(input,home,currdir);
 
-     	}/* else
+     	} /*else
      	if(c == BACKSPACE){				//implement backspace later
      		printf("\b");
      		index--;
 
-     	} */else {
+     	}*/ else {
      		input[index] = c;
      		index++;
      	}
      	if(c!='\n')
      	printf("%c",c);
-          else{
-               index=0;
-               printf("%c[2K\r", 27);
-          }
     }
 
 }
-
-#endif
